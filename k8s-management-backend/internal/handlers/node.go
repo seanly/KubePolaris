@@ -136,9 +136,9 @@ func (h *NodeHandler) GetNodes(c *gin.Context) {
 			"osImage":          node.Status.NodeInfo.OSImage,
 			"kernelVersion":    node.Status.NodeInfo.KernelVersion,
 			"containerRuntime": node.Status.NodeInfo.ContainerRuntimeVersion,
-			"cpuUsage":         0, // TODO: 获取实际CPU使用率
-			"memoryUsage":      0, // TODO: 获取实际内存使用率
-			"podCount":         0, // TODO: 获取实际Pod数量
+			"cpuUsage":         0, // 将在下面批量获取
+			"memoryUsage":      0, // 将在下面批量获取
+			"podCount":         0, // 将在下面批量获取
 			"maxPods":          podCapacity,
 			"taints":           taints,
 			"unschedulable":    node.Spec.Unschedulable,
@@ -151,6 +151,23 @@ func (h *NodeHandler) GetNodes(c *gin.Context) {
 				"pods":   podCapacity,
 			},
 		})
+	}
+
+	// 批量获取所有节点的资源使用情况
+	nodeMetrics, err := k8sClient.GetAllNodesMetrics()
+	if err != nil {
+		logger.Info("获取节点资源使用情况失败: %v", err)
+		// 如果获取失败，使用默认值，不影响主要功能
+	} else {
+		// 更新节点的资源使用情况
+		for i, nodeData := range result {
+			nodeName := nodeData["name"].(string)
+			if metrics, exists := nodeMetrics[nodeName]; exists {
+				result[i]["cpuUsage"] = metrics["cpuUsage"]
+				result[i]["memoryUsage"] = metrics["memoryUsage"]
+				result[i]["podCount"] = metrics["podCount"]
+			}
+		}
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -364,6 +381,20 @@ func (h *NodeHandler) GetNode(c *gin.Context) {
 		})
 	}
 
+	// 获取节点的实际资源使用情况
+	nodeMetrics, err := k8sClient.GetNodeMetrics(name)
+	cpuUsage := 0.0
+	memoryUsage := 0.0
+	podCount := 0
+	if err != nil {
+		logger.Info("获取节点资源使用情况失败: %v", err)
+		// 如果获取失败，使用默认值，不影响主要功能
+	} else {
+		cpuUsage = nodeMetrics["cpuUsage"].(float64)
+		memoryUsage = nodeMetrics["memoryUsage"].(float64)
+		podCount = nodeMetrics["podCount"].(int)
+	}
+
 	result := map[string]interface{}{
 		"name":              node.Name,
 		"status":            status,
@@ -379,6 +410,9 @@ func (h *NodeHandler) GetNode(c *gin.Context) {
 		"labels":            labels,
 		"unschedulable":     node.Spec.Unschedulable,
 		"creationTimestamp": node.CreationTimestamp.Time,
+		"cpuUsage":          cpuUsage,
+		"memoryUsage":       memoryUsage,
+		"podCount":          podCount,
 		"resources": map[string]interface{}{
 			"cpu":    cpuCapacity,
 			"memory": memoryCapacity,

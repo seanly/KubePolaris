@@ -66,6 +66,13 @@ func Setup(db *gorm.DB, cfg *config.Config) *gin.Engine {
 			v1.GET("/clusters/:clusterId/kubectl-terminal", kubectlTerminalHandler.HandleKubectlTerminal)
 		}
 
+		// SSH终端WebSocket路由
+		ssh := api.Group("/ssh")
+		{
+			sshHandler := handlers.NewSSHHandler()
+			ssh.GET("/connect", sshHandler.SSHConnect)
+		}
+
 		// 节点管理路由
 		clusterService := services.NewClusterService(db)
 		nodeHandler := handlers.NewNodeHandler(db, cfg, clusterService)
