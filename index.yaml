@@ -5,6 +5,33 @@ entries:
       category: Infrastructure
       licenses: Apache-2.0
     apiVersion: v2
+    appVersion: 1.0.5
+    created: "2026-02-05T07:20:30.018813614Z"
+    description: Enterprise-Grade Kubernetes Multi-Cluster Management Platform
+    digest: a55ba7ef2a099c6519b39cb0676926f7a0947756ae449b5f6fdb9493b84ce8c9
+    home: https://kubepolaris.clay-wangzhi.com
+    icon: https://kubepolaris.clay-wangzhi.com/img/logo.svg
+    keywords:
+    - kubernetes
+    - management
+    - multi-cluster
+    - devops
+    - k8s
+    maintainers:
+    - email: support@kubepolaris.io
+      name: KubePolaris Team
+      url: https://github.com/clay-wangzhi
+    name: kubepolaris
+    sources:
+    - https://github.com/clay-wangzhi/KubePolaris
+    type: application
+    urls:
+    - https://github.com/clay-wangzhi/KubePolaris/releases/download/kubepolaris-1.0.5/kubepolaris-1.0.5.tgz
+    version: 1.0.5
+  - annotations:
+      category: Infrastructure
+      licenses: Apache-2.0
+    apiVersion: v2
     appVersion: 1.0.3
     created: "2026-02-05T03:40:31.686635733Z"
     description: Enterprise-Grade Kubernetes Multi-Cluster Management Platform
@@ -28,4 +55,4 @@ entries:
     urls:
     - https://github.com/clay-wangzhi/KubePolaris/releases/download/kubepolaris-1.0.3/kubepolaris-1.0.3.tgz
     version: 1.0.3
-generated: "2026-02-05T03:40:31.686646122Z"
+generated: "2026-02-05T07:20:30.01882234Z"
